@@ -49,32 +49,32 @@ def train_val_loop(ds_train=None, ds_val=None):
     ## dataset iterator
     ds_train_iterator = ds_train.make_initializable_iterator()
     next_train_images, next_train_labels = ds_train_iterator.get_next()
-    next_train_labels = tf.one_hot(next_train_labels, depth=NUM_CLASSES)
-    next_train_labels = tf.cast(next_train_labels, dtype=tf.int64)
+    # next_train_labels = tf.one_hot(next_train_labels, depth=NUM_CLASSES)
+    # next_train_labels = tf.cast(next_train_labels, dtype=tf.int64)
     ds_train_iterator.initializer.run()
     
     ds_val_iterator = ds_val.make_initializable_iterator()
     next_val_images, next_val_labels = ds_val_iterator.get_next()
-    next_val_labels = tf.one_hot(next_val_labels, depth=NUM_CLASSES)
-    next_val_labels = tf.cast(next_val_labels, dtype=tf.int64)
+    # next_val_labels = tf.one_hot(next_val_labels, depth=NUM_CLASSES)
+    # next_val_labels = tf.cast(next_val_labels, dtype=tf.int64)
     ds_val_iterator.initializer.run()
 
     ## images/labels placeholder
     images = tf.placeholder(tf.float32, [BATCH_SIZE]+IMG_SHAPE, name='images')
-    labels = tf.placeholder(tf.int64, [BATCH_SIZE, NUM_CLASSES], name='labels')
+    labels = tf.placeholder(tf.int64, [BATCH_SIZE, ], name='labels')
     
     ## build model
     logits = model.mobilenet_v1(images, num_classes=NUM_CLASSES, depth_multiplier=DEPTH_MULTIPLIER, dropout_prob=DROPOUT_PROB,  is_training=True)
 
     ## create train_op
     # define loss_op
-    #loss_op = tf.losses.sparse_softmax_cross_entropy(labels, logits)
-    loss_op= tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=labels, name='loss')
+    loss_op = tf.losses.sparse_softmax_cross_entropy(labels, logits)
+    # loss_op= tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=labels, name='loss')
 
     # define acc_op
 
 
-    correct_pred =  tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
+    correct_pred =  tf.equal(tf.argmax(logits, 1), labels)
    # self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"))
 
 
@@ -145,6 +145,7 @@ def train_val_loop(ds_train=None, ds_val=None):
             }
         )
         train_writer.add_summary(train_summary, curr_step)
+        print('Step: ', curr_step, 'Train Loss = ', train_loss)
         # validation
         if (curr_step != 0 and curr_step % FLAGS.val_step_interval == 0):
             #total_val_acc = 0
