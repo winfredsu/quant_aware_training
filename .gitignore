@@ -1,1 +1,6 @@
-dataset
+apps/*/dataset
+apps/*/train
+apps/*/deploy
+apps/*/__pycache__
+
+quantize/__pycache__
