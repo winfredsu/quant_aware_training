@@ -56,17 +56,17 @@ def train_val_loop(ds_train=None, ds_val=None):
 
     ## images/labels placeholder
     images = tf.placeholder(tf.float32, [BATCH_SIZE]+IMG_SHAPE, name='images')
-    labels = tf.placeholder(tf.int64, [BATCH_SIZE], name='labels')
+    labels = tf.placeholder(tf.float32, [BATCH_SIZE, NUM_CLASSES], name='labels')
     
     ## build model
     logits = model.mobilenet_v1(images, num_classes=NUM_CLASSES, depth_multiplier=DEPTH_MULTIPLIER, dropout_prob=DROPOUT_PROB,  is_training=True)
 
     ## create train_op
     # define loss_op
-    loss_op = tf.losses.sparse_softmax_cross_entropy(labels, logits)
+    loss_op = tf.losses.sigmoid_cross_entropy(labels, logits)
 
     # define acc_op
-    correct_pred = tf.equal(labels, tf.argmax(logits,1))
+    correct_pred = tf.equal(labels, tf.round(tf.sigmoid(logits)))
     acc_op = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
     # create quantized training graph
     if FLAGS.quantize:

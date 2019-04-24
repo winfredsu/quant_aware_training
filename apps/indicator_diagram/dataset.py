@@ -54,9 +54,9 @@ def image_processing(filename, label):
     x = tf.read_file(filename)
     x_decode = tf.image.decode_jpeg(x, channels=3)
     img = tf.image.resize_images(x_decode, [160,160])
-    img = tf.cast(img, tf.float32) - 128.0
+    img = img - 128.0
     img = img / 128.0
-    augment_flag = True
+    augment_flag = False
     if augment_flag:
         p = random.random()
         if p > 0.5:
@@ -69,12 +69,12 @@ def prepare_ds():
     img_paths_train, img_paths_val, labels_train, labels_val = train_test_split(imgs, labels, train_size=0.6,stratify=labels, random_state=SEED)
     ds_train = tf.data.Dataset.from_tensor_slices((img_paths_train, labels_train)).map(image_processing)
     ds_train = ds_train.cache()
-    ds_train = ds_train.apply(shuffle_and_repeat(buffer_size=4096))
+    ds_train = ds_train.apply(tf.data.experimental.shuffle_and_repeat(buffer_size=4096))
     ds_train = ds_train.batch(BATCH_SIZE).prefetch(AUTOTUNE)
 
     ds_val  = tf.data.Dataset.from_tensor_slices((img_paths_val, labels_val)).map(image_processing)
     ds_val  = ds_val.cache()
-    ds_val  = ds_val.apply(shuffle_and_repeat(buffer_size=4096))
+    ds_val  = ds_val.apply(tf.data.experimental.shuffle_and_repeat(buffer_size=4096))
     ds_val  = ds_val.batch(BATCH_SIZE).prefetch(AUTOTUNE)
 
     return ds_train, ds_val

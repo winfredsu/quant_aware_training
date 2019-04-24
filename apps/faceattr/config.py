@@ -1,9 +1,15 @@
 # dataset related params
-IMG_SHAPE = [192, 160, 3]
+IMG_SHAPE = [160, 160, 3]
 DATASET_NAME = 'celeba'
-DATASET_SIZE = 202599
+DATASET_SIZE = 197011
 DATASET_SPLIT = [0.7, 0.15, 0.15] # TRAIN, VAL, TEST 
-NUM_CLASSES  = 10
+LABEL_NAMES = [
+    'Male',
+    'Smiling',
+    'Eyeglasses',
+    'Young'
+]
+NUM_CLASSES  = len(LABEL_NAMES)
 BATCH_SIZE   = 32
 
 TRAIN_SIZE = int(DATASET_SIZE*DATASET_SPLIT[0])
@@ -15,4 +21,4 @@ TEST_SPLIT  = DATASET_SIZE
 
 # model related params
 DEPTH_MULTIPLIER = 0.5
-DROPOUT_PROB = 0.1
+DROPOUT_PROB = 0.2

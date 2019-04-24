@@ -43,7 +43,7 @@ def freeze():
     tf.train.write_graph(
         frozen_gd,
         FLAGS.output_dir,
-        FLAGS.frozen_pb,
+        FLAGS.frozen_pb_name,
         as_text=False)
 
 def main(unused_arg):

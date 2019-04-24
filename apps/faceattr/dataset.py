@@ -11,14 +11,14 @@ def load_labels(labels_path):
     num_imgs = int(f.readline())
     # line 2: attribute names, 40 in total
     attr_names = f.readline().split()
-    col_idx = attr_names.index('Eyeglasses')
+    col_idx = [i for i,x in enumerate(attr_names) if x in LABEL_NAMES]
     # line 3 to end: 00xx.jpg -1 1 -1 1 ...
     labels = []
     for i in range(DATASET_SIZE):
         labels.append(list(map(np.float32, f.readline().split()[1:])))
     labels = np.array(labels)
     labels[labels<0] = 0
-    labels = labels[:, col_idx:col_idx+1]
+    labels = labels[:, col_idx]
     return labels[:TRAIN_SPLIT], labels[TRAIN_SPLIT:VAL_SPLIT], labels[VAL_SPLIT:]
 
 def load_imgs(imgs_dir):
@@ -35,13 +35,13 @@ def preprocess(img_path, label):
     img = tf.image.decode_jpeg(img, channels=IMG_SHAPE[2])
     # new range: [-1.0,1.0)
     img = tf.image.resize(img, IMG_SHAPE[:2])
-    img -= 128
-    img /= 128
+    img -= 128.0
+    img /= 128.0
     return img, label
 
-def prepare_dataset():
-    img_paths_train, img_paths_val, img_paths_test = load_imgs('./dataset/img_align_celeba')
-    labels_train, labels_val, labels_test = load_labels('./dataset/list_attr_celeba.txt')
+def get_dataset():
+    img_paths_train, img_paths_val, img_paths_test = load_imgs('./dataset/img_celeba_face')
+    labels_train, labels_val, labels_test = load_labels('./dataset/labels_celeba_face.txt')
 
     ds_train = tf.data.Dataset.from_tensor_slices((img_paths_train, labels_train)).map(preprocess)
     ds_train = ds_train.apply(tf.data.experimental.shuffle_and_repeat(buffer_size=4096))

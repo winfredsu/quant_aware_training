@@ -41,7 +41,7 @@ def mobilenet_v1(tensor_in, num_classes, depth_multiplier, dropout_prob, is_trai
         'is_training': is_training,
         'center': True, 
         'scale': True, 
-        'decay': 0.75, 
+        'decay': 0.95, 
         'epsilon': 0.001, 
         'updates_collections': tf.GraphKeys.UPDATE_OPS
     }
@@ -68,7 +68,7 @@ def mobilenet_v1(tensor_in, num_classes, depth_multiplier, dropout_prob, is_trai
                 net = tf.contrib.slim.separable_conv2d(net, 
                                                        num_outputs=None, # to skip pointwise stage
                                                        kernel_size=[3,3], 
-                                                       stride=layer_def['stride'],
+                                                       stride=layer_def['stride'], 
                                                        activation_fn=activation_fn,
                                                        normalizer_fn=normalizer_fn,
                                                        normalizer_params=normalizer_params,
