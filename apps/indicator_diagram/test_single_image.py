@@ -28,9 +28,16 @@ def test():
     pred = tf.argmax(logits,1)
     pred_val = pred.eval(feed_dict={
         images: image.eval()
-    })
-
+    })    
     print('Class Predicted: ', pred_val)
+
+    # print the image
+    
+    image_test = image.eval().reshape(160,160,3)
+    image_test = 128 * (image_test + 1)
+    print(image_test)
+    im = PIL.Image.fromarray(image_test.astype(np.uint8))
+    im.show()
 
 
 def main(unused_arg):
