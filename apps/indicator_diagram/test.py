@@ -22,7 +22,7 @@ def test():
     # restore frozen graph
     gd = tf.GraphDef.FromString(open(FLAGS.frozen_pb, 'rb').read())
     images, logits = tf.import_graph_def(gd, return_elements = 
-        ['images:0', FLAGS.output_node+':0'])
+        ['input:0', FLAGS.output_node+':0'])
     labels = tf.placeholder(tf.int64, [BATCH_SIZE, ], name='labels')
 
     correct_pred = tf.equal(labels, tf.argmax(logits,1))

@@ -5,11 +5,29 @@ import numpy as np
 import PIL
 from config import *
 
+
 tf.app.flags.DEFINE_string('frozen_pb', './frozen.pb', 'frozen pb name')
 tf.app.flags.DEFINE_string('output_node', 'MobilenetV1/Squeeze', 'name of output name')
 tf.app.flags.DEFINE_string('input_image', 'test.jpg', 'input image')
 
 FLAGS = tf.app.flags.FLAGS
+
+def load_labels(labels_path):
+    f = open(labels_path)
+    # line 1: number of images
+    num_imgs = int(f.readline())
+    # line 2: attribute names, 40 in total
+    attr_names = f.readline().split()
+    col_idx = [i for i,x in enumerate(attr_names) if x in LABEL_NAMES]
+    label_names = [attr_names[i] for i in col_idx]
+    # line 3 to end: 00xx.jpg -1 1 -1 1 ...
+    labels = []
+    for i in range(DATASET_SIZE):
+        labels.append(list(map(np.float32, f.readline().split()[1:])))
+    labels = np.array(labels)
+    labels[labels<0] = 0
+    labels = labels[:, col_idx]
+    return labels, label_names
 
 def test():
     sess = tf.InteractiveSession()
@@ -21,6 +39,10 @@ def test():
     image = tf.expand_dims(image, 0)
     image = image / 128.0 - 1.0
 
+    # get the ground truth
+    labels, label_names = load_labels('./dataset/list_attr_celeba.txt')
+    gt_val = labels[int(FLAGS.input_image.split('.')[0].split('/')[1])-1]
+
     # restore frozen graph
     gd = tf.GraphDef.FromString(open(FLAGS.frozen_pb, 'rb').read())
     images, logits = tf.import_graph_def(gd, return_elements = 
@@ -29,8 +51,9 @@ def test():
     pred_val = pred.eval(feed_dict={
         images: image.eval()
     })    
-    print('Label Names: ', LABEL_NAMES)
+    print('Label Names: ', label_names)
     print('Class Predicted: ', pred_val)
+    print('Class Labled: ', gt_val)
 
     # print the image
     
