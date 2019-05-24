@@ -21,7 +21,7 @@ def freeze():
         os.mkdir(FLAGS.train_dir)
 
     sess = tf.InteractiveSession()
-    images = tf.placeholder(tf.float32, [None]+IMG_SHAPE, name='images')
+    images = tf.placeholder(tf.float32, [None]+IMG_SHAPE, name='input')
     logits = model.mobilenet_v1(images, num_classes=NUM_CLASSES, depth_multiplier=DEPTH_MULTIPLIER, dropout_prob=0.0, is_training=False)
 
     # write a inference graph (for debug)

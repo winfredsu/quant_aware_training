@@ -46,7 +46,7 @@ def test():
     # restore frozen graph
     gd = tf.GraphDef.FromString(open(FLAGS.frozen_pb, 'rb').read())
     images, logits = tf.import_graph_def(gd, return_elements = 
-        ['images:0', FLAGS.output_node+':0'])
+        ['input:0', FLAGS.output_node+':0'])
     pred = tf.round(tf.sigmoid(logits))
     pred_val = pred.eval(feed_dict={
         images: image.eval()
